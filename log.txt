@@ -4,3 +4,5 @@ Timestamp: Mon May 23 2022 15:59:03 GMT-0400 (Eastern Daylight Time)
 URL: /favicon.ico
 Timestamp: Mon May 23 2022 15:59:03 GMT-0400 (Eastern Daylight Time)
 
+::1 - - [26/May/2022:01:33:24 +0000] "GET /documentation.html HTTP/1.1" 200 594 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36"
+::1 - - [26/May/2022:01:33:24 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:8080/documentation.html" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36"
