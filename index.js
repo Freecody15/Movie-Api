@@ -7,6 +7,14 @@ const express = require('express'),
 
 const app = express();
 
+const mongoose = require('mongoose');
+const Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+
+mongoose.connect('mongodb://localhost:27017/Cinemachannel', { useNewUrlParser: true, useUnifiedTopology: true });
+
 app.use(bodyParser.json());
 
 
@@ -14,7 +22,7 @@ app.use(bodyParser.json());
 // A "log.txt" file is created in root directory
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
 
-let users = [
+let User = [
     {
         "id": "1",
         "name": "John",
@@ -27,7 +35,7 @@ let users = [
     }
 ]
 
-let shows = [
+let Movie = [
     {
         "Title": "Prison Break",
         "Description": "#",
