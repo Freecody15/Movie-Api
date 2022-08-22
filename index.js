@@ -8,6 +8,7 @@ const app = express();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+const { send } = require('process');
 
 const Movies = Models.Movie;
 const Users = Models.User;
@@ -233,35 +234,33 @@ app.get('/users', function (req, res) {
         });
 });
 //Read specific movie
-app.get('/movies/:title', (req, res) => {
-    const { title } = req.params;
-    const movies = .find(movies => movies.Title === title)
-
-    if (movies) {
-        res.status(200).json(movies);
-    } else {
-        res.status(400).send("No such movies");
-    }
-
+app.get('/movies/:Title', (req, res) => {
+    Movies.findOne({ Title: req.params.Title })
+        .then((movie) => {
+            res.json(movie);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send("Error: " + err);
+        });
 });
 
 //Read genre
-app.get('//genre/:genreName', (req, res) => {
-    const { genreName } = req.params;
-    const genre = .find(movies => movies.Genre.Name === genreName).Genre;
-
-    if (genre) {
-        res.status(200).json(genre);
-    } else {
-        res.status(400).send("No such genre movies");
-    }
-
+app.get("/genre/:Name", (req, res) => {
+    Genres.findone({ Name: req.params.Name })
+        .then((genre) => {
+            res.json(genre.Description);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send("Error: " + err);
+        });
 });
 
 //Read director details
 app.get('//directors/:directorName', (req, res) => {
     const { directorName } = req.params;
-    const directors = .find(movies => movies.Director.name === directorName).Director;
+    const directors = directors.find(movies => movies.Director.name === directorName).Director;
 
     if (directors) {
         res.status(200).json(directors);
