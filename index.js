@@ -1,21 +1,29 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
-    morgan = require('morgan'),
     fs = require('fs'),
     uuid = require('uuid'),
     path = require('path');
 
 const app = express();
-
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
+const Genres = Models.Genre;
+const Director = Models.Director;
 
-mongoose.connect('mongodb://localhost:27017/Cinemachannel', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/Cinemachannel', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
+app.use(morgan("common"));
+// log requests to server
 app.use(bodyParser.json());
+
+
 
 
 // Create a write stream (in appen mode)
@@ -26,12 +34,12 @@ let User = [
     {
         "id": "1",
         "name": "John",
-        "favouriteshows": []
+        "favouritemovie": []
     },
     {
         "id": "2",
         "name": "Doe",
-        "favouriteshows": ['Naruto']
+        "favouritemovies": ['Naruto']
     }
 ]
 
@@ -202,41 +210,58 @@ let Movie = [
     }
 ];
 
-//Read all shows
-app.get('/shows', (req, res) => {
-    res.status(200).json(shows);
+//Read all movies
+app.get('/movies', (req, res) => {
+    Movies.find()
+        .than((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((err) => {
+            console, error(err);
+            res.status(500).send("Error: " + err);
+        });
 });
-
-//Read show 
-app.get('/shows/:title', (req, res) => {
+// gets all users
+app.get('/users', function (req, res) {
+    Users.find()
+        .than(function (users) {
+            res.status(201).json(users);
+        })
+        .catch(function (err) {
+            console.error(err);
+            res.status(500).send("Error: " + err);
+        });
+});
+//Read specific movie
+app.get('/movies/:title', (req, res) => {
     const { title } = req.params;
-    const show = shows.find(show => show.Title === title)
+    const movies = .find(movies => movies.Title === title)
 
-    if (show) {
-        res.status(200).json(show);
+    if (movies) {
+        res.status(200).json(movies);
     } else {
-        res.status(400).send("No such show");
+        res.status(400).send("No such movies");
     }
 
 });
 
 //Read genre
-app.get('/shows/genre/:genreName', (req, res) => {
+app.get('//genre/:genreName', (req, res) => {
     const { genreName } = req.params;
-    const genre = shows.find(show => show.Genre.Name === genreName).Genre;
+    const genre = .find(movies => movies.Genre.Name === genreName).Genre;
 
     if (genre) {
         res.status(200).json(genre);
     } else {
-        res.status(400).send("No such genre show");
+        res.status(400).send("No such genre movies");
     }
 
 });
 
 //Read director details
-app.get('/shows/directors/:directorName', (req, res) => {
+app.get('//directors/:directorName', (req, res) => {
     const { directorName } = req.params;
-    const directors = shows.find(show => show.Director.name === directorName).Director;
+    const directors = .find(movies => movies.Director.name === directorName).Director;
 
     if (directors) {
         res.status(200).json(directors);
@@ -272,27 +297,27 @@ app.put('/users/:id', (req, res) => {
     }
 });
 
-//post - add show to favoriteshows list
-app.post('/users/:id/:showTitle', (req, res) => {
-    const { id, showTitle } = req.params;
+//post - add movies to favoritemovies list
+app.post('/users/:id/:moviesTitle', (req, res) => {
+    const { id, moviesTitle } = req.params;
 
     let user = users.find(user => user.id == id);
     if (user) {
-        user.favouriteshows.push(showTitle);
-        res.status(200).send(`${showTitle} has been added to user ${id}'s array`);
+        user.favouritemoviess.push(moviesTitle);
+        res.status(200).send(`${moviesTitle} has been added to user ${id}'s array`);
     } else {
         res.status(400).send("No such user");
     }
 })
 
-//Delete show from user's favoriteshows list
-app.delete('/users/:id/:showTitle', (req, res) => {
-    const { id, showTitle } = req.params;
+//Delete movies from user's favoritemovies list
+app.delete('/users/:id/:moviesTitle', (req, res) => {
+    const { id, moviesTitle } = req.params;
 
     let user = users.find(user => user.id == id);
     if (user) {
-        user.favouriteshows = user.favouriteshows.filter(title => title !== showTitle);
-        res.status(200).send(`${showTitle} has been removed from user ${id}'s array`);
+        user.favouritemoviess = user.favouritemoviess.filter(title => title !== moviesTitle);
+        res.status(200).send(`${moviesTitle} has been removed from user ${id}'s array`);
     } else {
         res.status(400).send("No such user");
     }
@@ -316,8 +341,15 @@ app.get('/', (req, res) => {
     res.send('Welcome to Cinema channel');
 });
 
-app.get('/shows', (req, res) => {
-    res.json(shows);
+app.get('/movies', (req, res) => {
+    Movies.find()
+        .than((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((err) => {
+            console, error(err);
+            res.status(500).send("Error: " + err);
+        });
 });
 
 // Setup the logger middleware
