@@ -1,369 +1,222 @@
-const express = require('express'),
-    bodyParser = require('body-parser'),
-    fs = require('fs'),
-    uuid = require('uuid'),
-    path = require('path');
-
+const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
-const { send } = require('process');
+const movies = Models.Movie;
+const users = Models.User;
+const genres = Models.Genre;
+const directors = Models.Director;
 
-const Movies = Models.Movie;
-const Users = Models.User;
-const Genres = Models.Genre;
-const Director = Models.Director;
+mongoose.connect('mongodb://localhost:27017/Cinemachannel', { useNewUrlParser: true, useUnifiedTopology: true });
 
-mongoose.connect('mongodb://localhost:27017/Cinemachannel', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-app.use(morgan("common"));
-// log requests to server
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-
-// Create a write stream (in appen mode)
-// A "log.txt" file is created in root directory
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
-
-let User = [
-    {
-        "id": "1",
-        "name": "John",
-        "favouritemovie": []
-    },
-    {
-        "id": "2",
-        "name": "Doe",
-        "favouritemovies": ['Naruto']
-    }
-]
-
-let Movie = [
-    {
-        "Title": "Prison Break",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Serial drama, Crime drama, Action thriller",
-            "Description": "#",
-            "Total Episodes": "90"
-        }
-    },
-
-    {
-        "Title": "Banshee",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Action, Drama, Crime thriller",
-            "Description": "#",
-            "Total Episodes": "38"
-        }
-    },
-
-    {
-        "Title": "Jujutsu kaisen",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Adventure fiction, Dark fantasy, Supernatural fiction",
-            "Description": "#",
-            "Total Episodes": "24"
-        }
-    },
-
-    {
-        "Title": "One Piece",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Adventure, fantasy",
-            "Description": "#",
-            "Total Episodes": "1014"
-        }
-    },
-
-    {
-        "Title": "Hunter X Hunter",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Adventure, Fantasy, Martial arts",
-            "Description": "#",
-            "Total Episodes": "62"
-        }
-    },
-
-    {
-        "Title": "Baki the Grappler",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Martial arts",
-            "Description": "#",
-            "Total Episodes": "39 Current"
-        }
-    },
-
-    {
-        "Title": "Demon Slayer",
-        "Decription": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Drama",
-            "Description": "#",
-            "Total Episodes": "26 Current"
-        }
-    },
-
-    {
-        "Title": "Naruto Shippuuden",
-        "Decription": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Adventure, Fantasy, Comedy, Martial arts",
-            "Description": "#",
-            "Total Episodes": "500"
-        }
-    },
-
-    {
-        "Title": "Supernatural",
-        "Decription": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Action, Adventure, Drama, Fantasy, Horror",
-            "Description": "#",
-            "Total Episodes": "320"
-        }
-    },
-
-    {
-        "Title": "Sword Art Online: Alicization",
-        "Description": "#",
-        "Director": {
-            "name": "#",
-            "Birth Year": "#",
-            "Bio": "#"
-        },
-        "Genre": {
-            "Name": "Adventure, Science fiction",
-            "Description": "#",
-            "Total Episodes": "24"
-        }
-    },
-
-    {
-        "Title": "Naruto",
-        "Description": "Naruto is a ninja-in-training whose wild antics amuse his teammates. But he's completely serious about one thing: becoming the world's greatest ninja! As the battle against the Tailed Beast-targeting Akatsuki rages on, the heroic sibling battle between Sasuke and Itachi eventually concludes..",
-        "Director": {
-            "name": "Hayato Date",
-            "Birth Year": "1962",
-            "Bio": "Hayato Date, born May 22, 1962) is a Japanese animation director most known for the anime adaptations of Saiyuki and Naruto."
-        },
-        "Genre": {
-            "Name": "Adventure, Fantasy, Comedy, Martial arts",
-            "Description": "Naruto is a ninja-in-training whose wild antics amuse his teammates. But he's completely serious about one thing: becoming the world's greatest ninja! As the battle against the Tailed Beast-targeting Akatsuki rages on, the heroic sibling battle between Sasuke and Itachi eventually concludes.  ",
-            "Total Episodes": "220"
-        }
-    }
-];
-
-//Read all movies
-app.get('/movies', (req, res) => {
-    Movies.find()
-        .than((movies) => {
-            res.status(201).json(movies);
-        })
-        .catch((err) => {
-            console, error(err);
-            res.status(500).send("Error: " + err);
-        });
-});
-// gets all users
-app.get('/users', function (req, res) {
-    Users.find()
-        .than(function (users) {
-            res.status(201).json(users);
-        })
-        .catch(function (err) {
-            console.error(err);
-            res.status(500).send("Error: " + err);
-        });
-});
-//Read specific movie
-app.get('/movies/:Title', (req, res) => {
-    Movies.findOne({ Title: req.params.Title })
-        .then((movie) => {
-            res.json(movie);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send("Error: " + err);
-        });
-});
-
-//Read genre
-app.get("/genre/:Name", (req, res) => {
-    Genres.findone({ Name: req.params.Name })
-        .then((genre) => {
-            res.json(genre.Description);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send("Error: " + err);
-        });
-});
-
-//Read director details
-app.get('//directors/:directorName', (req, res) => {
-    const { directorName } = req.params;
-    const directors = directors.find(movies => movies.Director.name === directorName).Director;
-
-    if (directors) {
-        res.status(200).json(directors);
-    } else {
-        res.status(400).send("No such directors");
-    }
-
-});
-
-//create new user
-app.post('/users', (req, res) => {
-    const newUser = req.body;
-    if (newUser.name) {
-        newUser.id = uuid.v4();
-        users.push(newUser);
-        res.status(201).json(newUser)
-    } else {
-        res.status(400).send("users need name");
-    }
-});
-
-//update user
-app.put('/users/:id', (req, res) => {
-    const { id } = req.params;
-    const updatedUser = req.body;
-
-    let user = users.find(user => user.id == id);
-    if (user) {
-        user.name = updatedUser;
-        res.status(200).json(user);
-    } else {
-        res.status(400).send("No such user")
-    }
-});
-
-//post - add movies to favoritemovies list
-app.post('/users/:id/:moviesTitle', (req, res) => {
-    const { id, moviesTitle } = req.params;
-
-    let user = users.find(user => user.id == id);
-    if (user) {
-        user.favouritemoviess.push(moviesTitle);
-        res.status(200).send(`${moviesTitle} has been added to user ${id}'s array`);
-    } else {
-        res.status(400).send("No such user");
-    }
-})
-
-//Delete movies from user's favoritemovies list
-app.delete('/users/:id/:moviesTitle', (req, res) => {
-    const { id, moviesTitle } = req.params;
-
-    let user = users.find(user => user.id == id);
-    if (user) {
-        user.favouritemoviess = user.favouritemoviess.filter(title => title !== moviesTitle);
-        res.status(200).send(`${moviesTitle} has been removed from user ${id}'s array`);
-    } else {
-        res.status(400).send("No such user");
-    }
-});
-
-//Delete user
-app.delete('/users/:id', (req, res) => {
-    const { id } = req.params;
-
-    let user = users.find(user => user.id == id);
-    if (user) {
-        users = users.filter(user => user.id !== id);
-        res.status(200).send(`user email with ${id} is removed`);
-    } else {
-        res.status(400).send("No such user");
-    }
-});
-
-// Get requests
-app.get('/', (req, res) => {
-    res.send('Welcome to Cinema channel');
-});
-
-app.get('/movies', (req, res) => {
-    Movies.find()
-        .than((movies) => {
-            res.status(201).json(movies);
-        })
-        .catch((err) => {
-            console, error(err);
-            res.status(500).send("Error: " + err);
-        });
-});
-
-// Setup the logger middleware
-app.use(morgan('combined', { stream: accessLogStream }));
-
-// Sends static files to log.txt
 app.use(express.static('public'));
+app.use(morgan('common'));
 
-// Error handling
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
+// GET requests
+app.get('/', (req, res) => {
+  res.send('Welcome to Cinemachannel!');
 });
 
-// Listen for requests
+// Add new user
+app.post('/users', (req, res) => {
+  Users.findOne({ name: req.body.name })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.name + 'already exists');
+      } else {
+        Users
+          .create({
+            name: req.body.name,
+            password: req.body.password,
+            email: req.body.email,
+            birthday: req.body.birthday
+          })
+          .then((user) => { res.status(201).json(user) })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
+});
+
+// Add a movie to a user's list of favorites
+app.post('/users/:name/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ name: req.params.name }, {
+    $push: { favoriteMovies: req.params.MovieID }
+  },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+});
+
+// Remove a movie to a user's list of favorites
+app.delete('/users/:name/movies/:MovieID', (req, res) => {
+  Users.findOneAndUpdate({ name: req.params.name }, {
+    $pull: { favoriteMovies: req.params.MovieID }
+  },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+});
+
+// Get all users
+app.get('/users', (req, res) => {
+  Users.find()
+    .then((users) => {
+      res.status(201).json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// Get a user by username
+app.get('/users/:Username', (req, res) => {
+  Users.findOne({ name: req.params.name })
+    .then((user) => {
+      res.json(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+//Update user information
+app.put('/users/:name', (req, res) => {
+  Users.findOneAndUpdate({ name: req.params.name }, {
+    $set:
+    {
+      name: req.body.name,
+      password: req.body.password,
+      email: req.body.email,
+      birthday: req.body.birthday
+    }
+  },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+});
+
+//Get all movies
+app.get('/movies', (req, res) => {
+  movies.find()
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+app.get('/genre', (req, res) => {
+  genres.find()
+    .then((genre) => {
+      res.status(201).json(genre);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+// Get movies by title
+app.get('/movies/:Title', (req, res) => {
+  movies.findOne({ Title: req.params.Title })
+    .then((movie) => {
+      res.json(movie);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+//Get genre information
+app.get('/movies/genre/:name', (req, res) => {
+  movies.findOne({ "Genre.Name": req.params.name })
+    .then((movies) => {
+      res.json(movies.Genre);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err)
+    });
+});
+
+//Get director information
+app.get("/movies/director/:name", (req, res) => {
+  movies.findOne({ "Director.Name": req.params.name })
+    .then((movies) => {
+      res.json(movies.Director);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+app.get("/director/:name", (req, res) => {
+  directors.findOne({ "Director.Name": req.params.name })
+    .then((director) => {
+      res.json(director.name);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+// Delete a user by username
+app.delete('/users/:name', (req, res) => {
+  sers.findOneAndRemove({ name: req.params.name })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.name + ' was not found');
+      } else {
+        res.status(200).send(req.params.name + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
+});
+
+// listen for requests
 app.listen(8080, () => {
-    console.log("I'm running!");
+  console.log('Your app is listening on port 8080.');
 });
