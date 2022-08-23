@@ -141,11 +141,22 @@ app.get('/movies', (req, res) => {
       res.status(500).send("Error: " + err);
     });
 });
-
-app.get('/genre', (req, res) => {
-  genres.find()
+// gets all genre
+app.get('/genre/:Name', (req, res) => {
+  genres.findOne({ Name: req.params.name })
     .then((genre) => {
       res.status(201).json(genre);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
+
+app.get('/director', (req, res) => {
+  directors.find()
+    .then((director) => {
+      res.status(201).json(director);
     })
     .catch((err) => {
       console.error(err);
