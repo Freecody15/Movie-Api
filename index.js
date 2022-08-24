@@ -35,9 +35,9 @@ app.post('/users', (req, res) => {
         users
           .create({
             Username: req.body.Username,
-            Password: req.body.password,
-            Email: req.body.email,
-            Birthday: req.body.birthday
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
           })
           .then((user) => { res.status(201).json(user) })
           .catch((error) => {
