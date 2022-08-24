@@ -29,10 +29,10 @@ let genreSchema = mongoose.Schema({
 })
 
 let directorSchema = mongoose.Schema({
-  name: { type: String, required: true },
-  bio: { type: String, required: true },
-  birth: { type: String, required: false },
-  death: { type: String, required: false },
+  Name: { type: String, required: true },
+  Bio: { type: String, required: true },
+  Birth: { type: String, required: false },
+  Death: { type: String, required: false },
 });
 
 
