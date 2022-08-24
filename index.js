@@ -27,17 +27,17 @@ app.get('/', (req, res) => {
 });
 // Add new user
 app.post('/users', (req, res) => {
-  users.findOne({ name: req.body.name })
+  users.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.name + 'already exists');
+        return res.status(400).send(req.body.Username + " " + 'already exists');
       } else {
         users
           .create({
-            name: req.body.name,
-            password: req.body.password,
-            email: req.body.email,
-            birthday: req.body.birthday
+            Username: req.body.Username,
+            Password: req.body.password,
+            Email: req.body.email,
+            Birthday: req.body.birthday
           })
           .then((user) => { res.status(201).json(user) })
           .catch((error) => {
