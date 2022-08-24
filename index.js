@@ -17,8 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(morgan('common'));
 
-let Auth = require('./Auth')(app);
-const passport = require('passport');
+let Auth = require('./Auth')(app); // linking auth file and making it required
+const passport = require('passport');  // linking passport file and making it required
 require('./passport');
 
 // GET requests
@@ -125,7 +125,7 @@ app.put('/users/:Username', (req, res) => {
     });
 });
 //Get all movies
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   movies.find()
     .then((movies) => {
       res.status(201).json(movies);
