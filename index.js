@@ -16,6 +16,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(morgan('common'));
+
+let Auth = require('./Auth')(app);
+const passport = require('passport');
+require('./passport');
+
 // GET requests
 app.get('/', (req, res) => {
   res.send('Welcome to Cinemachannel!');
