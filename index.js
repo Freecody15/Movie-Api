@@ -9,6 +9,7 @@ const movies = Models.Movie;
 const users = Models.User;
 const genres = Models.Genre;
 const directors = Models.Director;
+const bcrypt = require('bcrypt');
 
 mongoose.connect('mongodb://localhost:27017/Cinemachannel', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -40,7 +41,8 @@ app.get('/', (req, res) => {
 });
 // Add new user
 app.post('/users', (req, res) => {
-  users.findOne({ Username: req.body.Username })
+  let hashedPassword = users.hashPassword(req.body.Password);
+  users.findOne({ Username: req.body.Username }) // searchs to see if a select username already exist.
     .then((user) => {
       if (user) {
         return res.status(400).send(req.body.Username + " " + 'already exists');
@@ -48,7 +50,7 @@ app.post('/users', (req, res) => {
         users
           .create({
             Username: req.body.Username,
-            Password: req.body.Password,
+            Password: hashedPassword,
             Email: req.body.Email,
             Birthday: req.body.Birthday
           })
