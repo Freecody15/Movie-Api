@@ -17,6 +17,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(morgan('common'));
 
+const cors = require('cors'); // lets cors be implamented so my site can link with all sites
+app.use(cors());
+// let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];  // to allow my site to only link with select sites.
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if(!origin) return callback(null, true);
+//    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+//       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+//       return callback(new Error(message ), false);
+//     }
+//     return callback(null, true);
+//   }
+// }));
 let Auth = require('./Auth')(app); // linking auth file and making it required
 const passport = require('passport');  // linking passport file and making it required
 require('./passport');
