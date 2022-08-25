@@ -20,9 +20,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(morgan('common'));
 
-const cors = require('cors'); // lets cors be implamented so my site can link with all sites
+const cors = require('cors'); // allow all domains
 app.use(cors());
-// let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];  // to allow my site to only link with select sites.
+// let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];  // to allow specific domains.
 // app.use(cors({
 //   origin: (origin, callback) => {
 //     if(!origin) return callback(null, true);
@@ -42,45 +42,47 @@ app.get('/', (req, res) => {
   res.send('Welcome to Cinemachannel!');
 });
 // Add new user
-app.post('/users',
-  [
-    check('Username', 'Username is required').isLength({ min: 5 }),
-    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
-    check('Password', 'Password is required').not().isEmpty(),
-    check('Email', 'Email does not appear to be valid').isEmail()
-  ], (req, res) => {
-    // check the validation object for errors
-    let errors = validationResult(req);
+try {
+  app.post('/users',
+    [
+      check('Username', 'Username is required').isLength({ min: 5 }),
+      check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+      check('Password', 'Password is required').not().isEmpty(),
+      check('Email', 'Email does not appear to be valid').isEmail()
+    ], (req, res) => {
+      // check the validation object for errors
+      let errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
 
-    let hashedPassword = users.hashPassword(req.body.Password);
-    users.findOne({ Username: req.body.Username }) // searchs to see if a select username already exist.
-      .then((user) => {
-        if (user) {
-          return res.status(400).send(req.body.Username + " " + 'already exists');
-        } else {
-          users
-            .create({
-              Username: req.body.Username,
-              Password: hashedPassword,
-              Email: req.body.Email,
-              Birthday: req.body.Birthday
-            })
-            .then((user) => { res.status(201).json(user) })
-            .catch((error) => {
-              console.error(error);
-              res.status(500).send('Error: ' + error);
-            })
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send('Error: ' + error);
-      });
-  });
+      let hashedPassword = users.hashPassword(req.body.Password);
+      users.findOne({ Username: req.body.Username }) // searchs to see if a select username already exist.
+        .then((user) => {
+          if (user) {
+            return res.status(400).send(req.body.Username + " " + 'already exists');
+          } else {
+            users
+              .create({
+                Username: req.body.Username,
+                Password: hashedPassword,
+                Email: req.body.Email,
+                Birthday: req.body.Birthday
+              })
+              .then((user) => { res.status(201).json(user) })
+              .catch((error) => {
+                console.error(error);
+                res.status(500).send('Error: ' + error);
+              })
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          res.status(500).send('Error: ' + error);
+        });
+    });
+} catch
 // Add a movie to a user's list of favorites
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   users.findOneAndUpdate({ Username: req.params.Username }, {
