@@ -6,7 +6,7 @@ const passport = require('passport'),
 let Users = Models.User,
     JWTStrategy = passportJWT.Strategy,
     ExtractJWT = passportJWT.ExtractJwt;
-
+// to define basic http authentication login request
 passport.use(new LocalStrategy({
     usernameField: 'Username',
     passwordField: 'Password'
@@ -17,10 +17,15 @@ passport.use(new LocalStrategy({
             console.log(error);
             return callback(error);
         }
-
+        // if error occurs or username can not be found will throw out this error
         if (!user) {
             console.log('incorrect username');
             return callback(null, false, { message: 'Incorrect username or password.' });
+        }
+
+        if (!user.validatePasword(password)) { // to validate hashed password
+            console.log('incorrect password');
+            return callback(null, false, { message: 'Incorrect password.' });
         }
 
         console.log('finished');
