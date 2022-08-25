@@ -26,61 +26,31 @@ app.get('/', (req, res) => {
   res.send('Welcome to Cinemachannel!');
 });
 // Add new user
-app.post('/user', (req, res) => {
-  try {
-    users.findOne({ Username: req.body.Username })
-      .then((user) => {
-        if (user) {
-          return res.status(400).send(req.body.Username + " " + 'already exist');
-        } else {
-          users
-            .create({
-              Username: req.body.Username,
-              Password: req.body.Password,
-              Email: req.body.Email,
-              Birthday: req.body.Birthday
-            })
-            .then((user) => { res.status(201).json(user) })
-            .catch((error) => {
-              console.error(error);
-              res.status(500).send('Error:' + error);
-            })
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send('Error:' + error);
-      });
-  } catch (e) {
-    res.status(500).send('Error:' + error);
-  }
+app.post('/users', (req, res) => {
+  users.findOne({ Username: req.body.Username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.Username + " " + 'already exists');
+      } else {
+        users
+          .create({
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+          })
+          .then((user) => { res.status(201).json(user) })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
+    });
 });
-// // Add new user
-// app.post('/users', (req, res) => {
-//   users.findOne({ Username: req.body.Username })
-//     .then((user) => {
-//       if (user) {
-//         return res.status(400).send(req.body.Username + " " + 'already exists');
-//       } else {
-//         users
-//           .create({
-//             Username: req.body.Username,
-//             Password: req.body.Password,
-//             Email: req.body.Email,
-//             Birthday: req.body.Birthday
-//           })
-//           .then((user) => { res.status(201).json(user) })
-//           .catch((error) => {
-//             console.error(error);
-//             res.status(500).send('Error: ' + error);
-//           })
-//       }
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//       res.status(500).send('Error: ' + error);
-//     });
-// });
 // Add a movie to a user's list of favorites
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   users.findOneAndUpdate({ Username: req.params.Username }, {
