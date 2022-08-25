@@ -41,7 +41,7 @@ require('./passport');
 app.get('/', (req, res) => {
   res.send('Welcome to Cinemachannel!');
 });
-Add new user
+// Add new user
 app.post('/users',
   [
     check('Username', 'Username is required').isLength({ min: 5 }),
