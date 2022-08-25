@@ -10,6 +10,7 @@ const users = Models.User;
 const genres = Models.Genre;
 const directors = Models.Director;
 const bcrypt = require('bcrypt');
+const { check, validationResult } = require('express-validator');
 
 mongoose.connect('mongodb://localhost:27017/Cinemachannel', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -40,32 +41,45 @@ app.get('/', (req, res) => {
   res.send('Welcome to Cinemachannel!');
 });
 // Add new user
-app.post('/users', (req, res) => {
-  let hashedPassword = users.hashPassword(req.body.Password);
-  users.findOne({ Username: req.body.Username }) // searchs to see if a select username already exist.
-    .then((user) => {
-      if (user) {
-        return res.status(400).send(req.body.Username + " " + 'already exists');
-      } else {
-        users
-          .create({
-            Username: req.body.Username,
-            Password: hashedPassword,
-            Email: req.body.Email,
-            Birthday: req.body.Birthday
-          })
-          .then((user) => { res.status(201).json(user) })
-          .catch((error) => {
-            console.error(error);
-            res.status(500).send('Error: ' + error);
-          })
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send('Error: ' + error);
-    });
-});
+app.post('/users',
+  [
+    check('Username', 'Username is required').isLength({ min: 5 }),
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+    // check the validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    let hashedPassword = users.hashPassword(req.body.Password);
+    users.findOne({ Username: req.body.Username }) // searchs to see if a select username already exist.
+      .then((user) => {
+        if (user) {
+          return res.status(400).send(req.body.Username + " " + 'already exists');
+        } else {
+          users
+            .create({
+              Username: req.body.Username,
+              Password: hashedPassword,
+              Email: req.body.Email,
+              Birthday: req.body.Birthday
+            })
+            .then((user) => { res.status(201).json(user) })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send('Error: ' + error);
+            })
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+      });
+  });
 // Add a movie to a user's list of favorites
 app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
   users.findOneAndUpdate({ Username: req.params.Username }, {
@@ -210,6 +224,7 @@ app.delete('/users/:Username', passport.authenticate('jwt', { session: false }),
     });
 });
 // listen for requests
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port ' + port);
 });
