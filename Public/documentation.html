@@ -13,8 +13,8 @@
   <h2>Documentation Page</h1>
     <p>
       Building a server-side component of a Cinema web application.
-      This web application will provide access to information about different shows, directors, episode count, and genres.
-      Users will be able to sign up,update their personal information, and create a list of their favorite shows.
+      This web application will provide access to information about different movies, directors, episode count, and genres.
+      Users will be able to sign up,update their personal information, and create a list of their favorite movies.
     </p>
     <table class="table table-bordered">
       <thead class="thead-dark">
@@ -30,19 +30,19 @@
       <tbody>
         <tr>
           <th scope="row">1</th>
-          <td>Get a list of all shows</td>
-          <td>/shows</td>
+          <td>Get a list of all movies</td>
+          <td>/movies</td>
           <td>GET</td>
           <td>None</td>
           <td>A JSON object holding data
-            about all the shows</td>
+            about all the movies</td>
         </tr>
         <tr>
           <th scope="row">2</th>
           <td>Get data about a
             single show by
             title</td>
-          <td>/shows/[title]</td>
+          <td>/movies/Title</td>
           <td>GET</td>
           <td>None</td>
           <td> A JSON object holding data about a single show,containing an title, description,director, and genre
@@ -56,7 +56,7 @@
         <tr>
           <th scope="row">3</th>
           <td>Return genre by name</td>
-          <td>/shows/[genre]/[genreName]</td>
+          <td>/genre]/genreName</td>
           <td>GET</td>
           <td>None</td>
           <td>A JSON object holding data about the genre class<br>
@@ -71,7 +71,7 @@
         <tr>
           <th scope="row">4</th>
           <td>Get data about director by name</td>
-          <td>/shows/[directors]/[directorName]</td>
+          <td>/directors/directorName</td>
           <td>GET</td>
           <td>None</td>
           <td>A JSON object holding data about a director.Example<br>
@@ -92,7 +92,7 @@
             add, structured like:<br>
             {<br>
             name : "Jane",<br>
-            favoriteshows=[]<br>
+            favoritemovies=[]<br>
             }
           </td>
           <td>A JSON object holding data
@@ -101,14 +101,14 @@
             {<br>
             id:3,<br>
             name : "Jane",<br>
-            favouriteshows=[]<br>
+            favouritemovies=[]<br>
             }<br>
           </td>
         </tr>
         <tr>
           <th scope="row">6</th>
           <td>update user name</td>
-          <td>/users/[id]</td>
+          <td>/users/:Username</td>
           <td>PUT</td>
           <td>A JSON object holding data to update. Example<br>
             {<br>
@@ -119,7 +119,7 @@
             {<br>
             "id": "2",<br>
             "name": "Doe updated"<br>
-            "favouriteshows": [<br>
+            "favouritemovies": [<br>
             "Naruto"<br>
             ]<br>
             }<br>
@@ -128,7 +128,7 @@
         <tr>
           <th scope="row">7</th>
           <td>Add show to favorites list of user</td>
-          <td>/users/[id]/[showTitle]</td>
+          <td>/users/:Username/movies/:Movieid</td>
           <td>POST</td>
           <td>None</td>
           <td>A text message indicating
@@ -138,7 +138,7 @@
         <tr>
           <th scope="row">8</th>
           <td>Remove a show from list of favourites</td>
-          <td>/users/[id]/[showTitle]</td>
+          <td>/users/:Username/movies/:Movieid</td>
           <td>DELETE</td>
           <td>None</td>
           <td>A text message indicating
@@ -148,7 +148,7 @@
         <tr>
           <th scope="row">9</th>
           <td>De-registering a user</td>
-          <td>/users/id</td>
+          <td>/users/Username</td>
           <td>DELETE</td>
           <td>None</td>
           <td>A text message indicating
