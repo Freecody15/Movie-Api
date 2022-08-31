@@ -37,10 +37,11 @@ let Auth = require('./Auth')(app); // linking auth file and making it required
 const passport = require('passport');  // linking passport file and making it required
 require('./passport');
 
-// GET requests
+// Home
 app.get('/', (req, res) => {
-  res.send('Welcome to Cinemachannel!');
+  res.sendFile('/index.html', { root: __dirname });
 });
+
 // Add new user
 app.post('/users',
   [
