@@ -9,7 +9,7 @@ const movies = Models.Movie;
 const users = Models.User;
 const genres = Models.Genre;
 const directors = Models.Director;
-const bcrypt = require('bcrypt');
+// const bcrypt = require('bcrypt');
 const { check, validationResult } = require('express-validator');
 
 // mongoose.connect('mongodb://localhost:27017/Cinemachannel', { useNewUrlParser: true, useUnifiedTopology: true }); // to connect to local 
